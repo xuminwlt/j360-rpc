@@ -31,7 +31,7 @@ public class RPCClient implements Endpoint{
      * 因为该rpc只使用单个协议作为传输,所以只需要定义一个Client实例
      * 服务集合内存表,根据依赖的多个服务,一个服务有多个实例
      */
-    private ConcurrentHashMap<String,ServiceProvider> providerMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String,ServiceProvider> providerMap = new ConcurrentHashMap<>();
 
 
     public RPCClient(List<Consumer> consumers,RPCClientOption rpcClientOption) {
@@ -161,8 +161,5 @@ public class RPCClient implements Endpoint{
             return null;
         }
     }
-
-
-
 
 }

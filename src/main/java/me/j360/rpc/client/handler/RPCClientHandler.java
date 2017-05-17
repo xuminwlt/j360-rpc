@@ -31,7 +31,7 @@ public class RPCClientHandler extends SimpleChannelInboundHandler<RPCMessage<RPC
             return;
         }
 
-        //RPCClient.removeRPCFuture(logId);
+        //DefaultFuture..removeRPCFuture(logId);
 
         if (fullResponse.getHeader().getResCode() == RPCHeader.ResCode.RES_SUCCESS) {
             Method decodeMethod = future.getResponseClass().getMethod("parseFrom", byte[].class);
