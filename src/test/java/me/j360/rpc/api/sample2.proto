@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package api;
+option java_package = "me.j360.rpc.api";
+option java_outer_classname = "Sample2";
+
+message SampleRequest {
+    int32 a = 1;
+    string b = 2;
+}
+
+message SampleResponse {
+    string c = 1;
+}
