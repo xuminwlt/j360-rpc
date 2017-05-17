@@ -1,22 +1,36 @@
-# Compiled class file
-*.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
 *.jar
 *.war
-*.ear
-*.zip
-*.tar.gz
-*.rar
+*~
+*.class
+*.lock
+*.DS_Store
+*.swp
+*.out
+target/
+*.iml
+*.ipr
+*.iws
+.settings/
+.classpath
+.project
+.metadata/
+.idea/
+logs/
+*.log
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+dependency-reduced-pom.xml
+aixforce-search/data
+*.rdb
+db/
+*.versionsBackup
+.flattened-pom.xml
+
+node_modules/
+sass/
+package.json
+Gruntfile.js
+config.js
+.sass-cache/
+
+
+
