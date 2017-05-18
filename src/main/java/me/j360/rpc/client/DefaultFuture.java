@@ -9,8 +9,6 @@ import me.j360.rpc.codec.RPCMessage;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -187,7 +185,7 @@ public class DefaultFuture<T> implements ResponseFuture {
     }
 
 
-    public static void sent(Channel channel, Request request) {
+    /*public static void sent(Channel channel, Request request) {
         DefaultFuture future = FUTURES.get(request.getId());
         if (future != null) {
             future.doSent();
@@ -228,5 +226,5 @@ public class DefaultFuture<T> implements ResponseFuture {
         if (callback != null) {
             invokeCallback(callback);
         }
-    }
+    }*/
 }

@@ -11,6 +11,17 @@ import java.net.InetSocketAddress;
  * 说明：
  */
 public class RPCServer implements Endpoint {
+
+
+
+    public RPCServer() {
+
+    }
+
+
+
+
+
     @Override
     public InetSocketAddress getLocalAddress() {
         return null;

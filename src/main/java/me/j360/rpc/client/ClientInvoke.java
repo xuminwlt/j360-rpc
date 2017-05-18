@@ -1,13 +1,5 @@
 package me.j360.rpc.client;
 
-import io.netty.channel.Channel;
-import me.j360.rpc.codec.RPCHeader;
-import me.j360.rpc.codec.RPCMessage;
-
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 /**
  * Package: me.j360.rpc.client
  * User: min_xu
@@ -27,7 +19,7 @@ public class ClientInvoke {
 
     private RPCClient rpcClient;
 
-    public DefaultFuture<T> invoke() {
+    /*public DefaultFuture<T> invoke() {
 
         try {
             boolean isAsync = RpcUtils.isAsync(getUrl(), invocation);
@@ -118,5 +110,5 @@ public class ClientInvoke {
         log.debug("channel isActive={}", channel.isActive());
         //connection.setChannel(channel);
         channel.writeAndFlush(fullRequest);
-    }
+    }*/
 }
