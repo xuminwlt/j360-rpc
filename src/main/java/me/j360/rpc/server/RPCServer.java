@@ -4,6 +4,7 @@ import me.j360.rpc.core.Endpoint;
 import me.j360.rpc.register.ServiceRegister;
 
 import java.net.InetSocketAddress;
+import java.util.Map;
 
 /**
  * Package: me.j360.rpc.server
@@ -16,6 +17,8 @@ public class RPCServer implements Endpoint {
 
     private RPCServerOption rpcServerOption;
     private ServiceRegister serviceRegister;
+
+    public  Map<String, Object> handlerMap;
 
     public RPCServer(RPCServerOption rpcServerOption, ServiceRegister serviceRegister) {
         this.rpcServerOption = rpcServerOption;

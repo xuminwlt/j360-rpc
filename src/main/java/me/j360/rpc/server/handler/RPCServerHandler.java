@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import me.j360.rpc.codec.protobuf.RPCHeader;
 import me.j360.rpc.codec.protobuf.RPCMessage;
+import me.j360.rpc.codec.protostuff.RpcRequest;
 import me.j360.rpc.server.RPCServer;
 import me.j360.rpc.server.RPCServiceCallManager;
 import me.j360.rpc.server.RPCServiceTask;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * Date: 2017/5/19 上午10:17
  * 说明：
  */
-public class RPCServerHandler extends SimpleChannelInboundHandler<RPCMessage<RPCHeader.RequestHeader>> {
+public class RPCServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RPCServerHandler.class);
 
@@ -28,7 +29,7 @@ public class RPCServerHandler extends SimpleChannelInboundHandler<RPCMessage<RPC
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx,
-                             RPCMessage<RPCHeader.RequestHeader> request) throws Exception {
+                             RpcRequest request) throws Exception {
         RPCServiceTask task = new RPCServiceTask(ctx.channel(), request, rpcServer);
         RPCServiceCallManager.execute(task);
     }
