@@ -3,6 +3,7 @@ package me.j360.rpc.server.handler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import me.j360.rpc.codec.RPCHeader;
+import me.j360.rpc.codec.RPCMessage;
 import me.j360.rpc.server.RPCServer;
 import me.j360.rpc.server.RPCServiceCallManager;
 import me.j360.rpc.server.RPCServiceTask;
@@ -28,7 +29,7 @@ public class RPCServerHandler extends SimpleChannelInboundHandler<RPCMessage<RPC
     @Override
     public void channelRead0(ChannelHandlerContext ctx,
                              RPCMessage<RPCHeader.RequestHeader> request) throws Exception {
-        RPCServiceTask task = new RPCServiceTask.WorkTask(ctx, request, rpcServer);
+        RPCServiceTask task = new RPCServiceTask(ctx.channel(), request, rpcServer);
         RPCServiceCallManager.execute(task);
     }
 

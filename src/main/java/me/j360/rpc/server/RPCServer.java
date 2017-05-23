@@ -39,5 +39,4 @@ public class RPCServer implements Endpoint {
     }
 
 
-    public
 }
