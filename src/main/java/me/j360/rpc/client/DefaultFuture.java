@@ -10,10 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Package: me.j360.rpc.client
@@ -31,6 +28,8 @@ public class DefaultFuture<T> implements ResponseFuture {
     private static final Map<String, DefaultFuture> FUTURES   = new ConcurrentHashMap<String, DefaultFuture>();
 
 
+    private static ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+
     private CountDownLatch latch;
     private ScheduledFuture scheduledFuture;
     private RPCMessage<RPCHeader.RequestHeader> fullRequest;
@@ -38,10 +37,10 @@ public class DefaultFuture<T> implements ResponseFuture {
 
     private RPCMessage<RPCHeader.ResponseHeader> fullResponse;
     private Throwable error;
+    private Long readTimeout;
 
-    public DefaultFuture(ScheduledFuture scheduledFuture,
-                     RPCMessage<RPCHeader.RequestHeader> fullRequest,
-                     RPCCallback<T> callback) {
+    public DefaultFuture(RPCMessage<RPCHeader.RequestHeader> fullRequest,
+                     RPCCallback<T> callback,Long readTimeout) {
         if (fullRequest.getResponseBodyClass() == null && callback == null) {
             log.error("responseClass or callback must have one not null only");
             return;
@@ -54,7 +53,23 @@ public class DefaultFuture<T> implements ResponseFuture {
             Class clazz = (Class) ((ParameterizedType) type).getActualTypeArguments()[0];
             this.fullRequest.setResponseBodyClass(clazz);
         }
+
+        scheduledExecutor.schedule(new Runnable() {
+            @Override
+            public void run() {
+                DefaultFuture rpcFuture = DefaultFuture.removeRPCFuture(logId);
+                if (rpcFuture != null) {
+                    log.debug("request timeout, logId={}, service={}, method={}",
+                            logId, serviceName, methodName);
+                    rpcFuture.timeout();
+                } else {
+                    log.debug("request logId={} not found", logId);
+                }
+            }
+        }, readTimeout, TimeUnit.MILLISECONDS);
+
         this.latch = new CountDownLatch(1);
+
     }
 
     public void success(RPCMessage<RPCHeader.ResponseHeader> fullResponse) {
@@ -191,6 +206,8 @@ public class DefaultFuture<T> implements ResponseFuture {
             future.doSent();
         }
     }
+
+
 
 
 }
