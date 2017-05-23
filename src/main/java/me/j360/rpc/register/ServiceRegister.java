@@ -7,4 +7,16 @@ package me.j360.rpc.register;
  * 说明：
  */
 public class ServiceRegister {
+
+
+    private String zkAddress;
+
+    public ServiceRegister(String zkAddress) {
+        this.zkAddress = zkAddress;
+    }
+
+
+    public void register(String data) {
+
+    }
 }

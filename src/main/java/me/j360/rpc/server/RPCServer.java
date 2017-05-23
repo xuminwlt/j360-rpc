@@ -39,4 +39,8 @@ public class RPCServer implements Endpoint {
     }
 
 
+    public void shutdown() {
+
+    }
+
 }

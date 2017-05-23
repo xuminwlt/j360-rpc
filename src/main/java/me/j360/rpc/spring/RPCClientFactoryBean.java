@@ -1,10 +1,49 @@
 package me.j360.rpc.spring;
 
+import me.j360.rpc.server.RPCServer;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
 /**
  * Package: me.j360.rpc.spring
  * User: min_xu
  * Date: 2017/5/23 下午3:40
- * 说明：
+ * 说明：use with @import
  */
-public class RPCClientFactoryBean {
+
+public class RPCClientFactoryBean implements FactoryBean<RPCServer>, InitializingBean, DisposableBean, ApplicationContextAware {
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+
+    }
+
+    @Override
+    public void destroy() throws Exception {
+
+    }
+
+    @Override
+    public RPCServer getObject() throws Exception {
+        return null;
+    }
+
+    @Override
+    public Class<?> getObjectType() {
+        return null;
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return false;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
+    }
 }
