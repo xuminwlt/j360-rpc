@@ -185,14 +185,15 @@ public class DefaultFuture<T> implements ResponseFuture {
     }
 
 
-    /*public static void sent(Channel channel, Request request) {
+    public static void sent(Channel channel, Request request) {
         DefaultFuture future = FUTURES.get(request.getId());
         if (future != null) {
             future.doSent();
         }
     }
 
-    private void doSent() {
+    private doSent() {
+
         sent = System.currentTimeMillis();
     }
 
@@ -226,5 +227,5 @@ public class DefaultFuture<T> implements ResponseFuture {
         if (callback != null) {
             invokeCallback(callback);
         }
-    }*/
+    }
 }
