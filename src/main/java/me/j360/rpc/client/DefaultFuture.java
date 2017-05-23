@@ -3,8 +3,8 @@ package me.j360.rpc.client;
 import com.google.protobuf.GeneratedMessageV3;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
-import me.j360.rpc.codec.RPCHeader;
-import me.j360.rpc.codec.RPCMessage;
+import me.j360.rpc.codec.protobuf.RPCHeader;
+import me.j360.rpc.codec.protobuf.RPCMessage;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;

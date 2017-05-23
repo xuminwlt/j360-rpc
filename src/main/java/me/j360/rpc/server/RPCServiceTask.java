@@ -4,7 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import lombok.extern.slf4j.Slf4j;
-import me.j360.rpc.codec.RPCMessage;
+import me.j360.rpc.codec.protobuf.RPCMessage;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 

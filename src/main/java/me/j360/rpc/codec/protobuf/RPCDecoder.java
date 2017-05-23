@@ -1,4 +1,4 @@
-package me.j360.rpc.codec;
+package me.j360.rpc.codec.protobuf;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

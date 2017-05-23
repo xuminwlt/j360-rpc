@@ -2,8 +2,8 @@ package me.j360.rpc.server.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import me.j360.rpc.codec.RPCHeader;
-import me.j360.rpc.codec.RPCMessage;
+import me.j360.rpc.codec.protobuf.RPCHeader;
+import me.j360.rpc.codec.protobuf.RPCMessage;
 import me.j360.rpc.server.RPCServer;
 import me.j360.rpc.server.RPCServiceCallManager;
 import me.j360.rpc.server.RPCServiceTask;

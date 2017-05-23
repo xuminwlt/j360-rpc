@@ -5,8 +5,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import me.j360.rpc.client.DefaultFuture;
-import me.j360.rpc.codec.RPCHeader;
-import me.j360.rpc.codec.RPCMessage;
+import me.j360.rpc.codec.protobuf.RPCHeader;
+import me.j360.rpc.codec.protobuf.RPCMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

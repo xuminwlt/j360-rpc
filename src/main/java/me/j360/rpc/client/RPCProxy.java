@@ -1,10 +1,9 @@
 package me.j360.rpc.client;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.extern.slf4j.Slf4j;
 import me.j360.rpc.client.handler.RPCClientHandler;
-import me.j360.rpc.codec.RPCHeader;
-import me.j360.rpc.codec.RPCMessage;
+import me.j360.rpc.codec.protobuf.RPCHeader;
+import me.j360.rpc.codec.protobuf.RPCMessage;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
