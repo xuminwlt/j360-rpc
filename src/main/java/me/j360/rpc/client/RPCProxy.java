@@ -1,5 +1,6 @@
 package me.j360.rpc.client;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.extern.slf4j.Slf4j;
 import me.j360.rpc.client.handler.RPCClientHandler;
 import me.j360.rpc.codec.RPCHeader;
@@ -21,18 +22,42 @@ public class RPCProxy<T> implements MethodInterceptor {
 
     private Class<T> clazz;
 
-    public RPCProxy(RPCClient rpcClient, Class clazz) {
+    private Boolean async;
+
+    private RPCCallback rpcCallback;
+
+    public RPCProxy(RPCClient rpcClient, Class clazz, boolean async, RPCCallback rpcCallback) {
         this.clazz = clazz;
         this.rpcClient = rpcClient;
+        this.async = async;
+        this.rpcCallback = rpcCallback;
     }
+
 
     public static <T> T getProxy(RPCClient rpcClient, Class clazz) {
         Enhancer en = new Enhancer();
         en.setSuperclass(clazz);
-        en.setCallback(new RPCProxy(rpcClient,clazz));
+        en.setCallback(new RPCProxy(rpcClient,clazz,false,null));
         return (T) en.create();
     }
 
+    public static <T> T getProxy(RPCClient rpcClient, Class clazz, boolean async, RPCCallback rpcCallback) {
+        Enhancer en = new Enhancer();
+        en.setSuperclass(clazz);
+        en.setCallback(new RPCProxy(rpcClient,clazz,async,rpcCallback));
+        return (T) en.create();
+    }
+
+
+    /**
+     * 异步情况下返回null
+     * @param obj
+     * @param method
+     * @param args
+     * @param proxy
+     * @return
+     * @throws Throwable
+     */
     public Object intercept(Object obj, Method method, Object[] args,
                             MethodProxy proxy) throws Throwable {
 
@@ -50,13 +75,19 @@ public class RPCProxy<T> implements MethodInterceptor {
         filterChain.doFilter(fullRequest, fullResponse);*/
 
         RPCClientHandler rpcClientHandler = RPCConnectManager.getInstance(rpcClient.rpcClientOption).selectHandler();
-        DefaultFuture future = new DefaultFuture(rpcClientHandler);
-        DefaultFuture.sent(rpcClientHandler.getChannel(),fullRequest);
+
 
         //在此处校验并使用同步或异步的判断+超时+其他的校验,分别调用DefaultFuture的不同的方法
-        fullResponse = DefaultFuture.getFuture(fullRequest.getHeader().getLogId()).get();
+        if (!async.booleanValue()) {
+            DefaultFuture future = new DefaultFuture(rpcClientHandler,fullRequest,null);
+            DefaultFuture.sent(rpcClientHandler.getChannel(),fullRequest);
 
-        return fullResponse.getBodyMessage();
+            fullResponse = DefaultFuture.getFuture(fullRequest.getHeader().getLogId()).get();
+            return fullResponse.getBodyMessage();
+        } else {
+            DefaultFuture future = new DefaultFuture(rpcClientHandler,fullRequest,rpcCallback);
+            DefaultFuture.sent(rpcClientHandler.getChannel(),fullRequest);
+            new RPCMessage<>().getBodyMessage();
+        }
     }
-
 }

@@ -40,6 +40,15 @@ public class RPCClient implements Endpoint{
         return RPCProxy.getProxy(this,interfaceClass);
     }
 
+    public <T> T createAsync(Class<T> interfaceClass,RPCCallback callback) {
+        /*return (T) Proxy.newProxyInstance(
+                interfaceClass.getClassLoader(),
+                new Class<?>[]{interfaceClass},
+                new ObjectProxy<T>(interfaceClass)
+        ); */
+        return RPCProxy.getProxy(this,interfaceClass,true,callback);
+    }
+
 
     @Override
     public InetSocketAddress getLocalAddress() {

@@ -62,7 +62,8 @@ public class RPCClientTest {
                 System.out.printf("async call SampleService.sampleRPC failed, %s\n", e.getMessage());
             }
         };
-        //rpcClient.asyncCall("SampleService.sampleRPC", request, callback);
+
+        rpcClient.createAsync("SampleService.sampleRPC", request, callback);
     }
 
 }

@@ -192,40 +192,5 @@ public class DefaultFuture<T> implements ResponseFuture {
         }
     }
 
-    private doSent() {
 
-        sent = System.currentTimeMillis();
-    }
-
-    public static void received(Channel channel, Response response) {
-        try {
-            DefaultFuture future = FUTURES.remove(response.getId());
-            if (future != null) {
-                future.doReceived(response);
-            } else {
-                logger.warn("The timeout response finally returned at "
-                        + (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date()))
-                        + ", response " + response
-                        + (channel == null ? "" : ", channel: " + channel.getLocalAddress()
-                        + " -> " + channel.getRemoteAddress()));
-            }
-        } finally {
-            CHANNELS.remove(response.getId());
-        }
-    }
-
-    private void doReceived(Response res) {
-        lock.lock();
-        try {
-            response = res;
-            if (done != null) {
-                done.signal();
-            }
-        } finally {
-            lock.unlock();
-        }
-        if (callback != null) {
-            invokeCallback(callback);
-        }
-    }
 }

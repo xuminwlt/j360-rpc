@@ -22,5 +22,9 @@
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.7" level="project" />
     <orderEntry type="library" name="Maven: cglib:cglib:3.2.4" level="project" />
     <orderEntry type="library" name="Maven: org.ow2.asm:asm:5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.dyuproject.protostuff:protostuff-core:1.0.8" level="project" />
+    <orderEntry type="library" name="Maven: com.dyuproject.protostuff:protostuff-api:1.0.8" level="project" />
+    <orderEntry type="library" name="Maven: com.dyuproject.protostuff:protostuff-runtime:1.0.8" level="project" />
+    <orderEntry type="library" name="Maven: com.dyuproject.protostuff:protostuff-collectionschema:1.0.8" level="project" />
   </component>
 </module>
