@@ -30,14 +30,16 @@ public class RPCClientConfiguration {
         return new RPCClientOption();
     }
 
-    @Bean
-    public ServiceDiscovery serviceDiscovery() {
-        return new ServiceDiscovery(zkAddress);
-    }
+
 
     @Bean
     public RPCClient rpcClient() {
         return null;
     }
 
+
+    @Bean
+    public ServiceDiscovery serviceDiscovery() {
+        return new ServiceDiscovery(rpcClient(),zkAddress);
+    }
 }

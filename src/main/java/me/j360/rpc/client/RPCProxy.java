@@ -2,8 +2,8 @@ package me.j360.rpc.client;
 
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
-import me.j360.rpc.codec.protobuf.RPCHeader;
-import me.j360.rpc.codec.protobuf.RPCMessage;
+import me.j360.rpc.codec.protostuff.RpcRequest;
+import me.j360.rpc.codec.protostuff.RpcResponse;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -64,29 +64,29 @@ public class RPCProxy<T> implements MethodInterceptor {
         final String serviceName = method.getDeclaringClass().getSimpleName();
         final String methodName = method.getName();
 
-        RPCMessage<RPCHeader.RequestHeader> fullRequest = DefaultFuture.buildFullRequest(
-                logId, serviceName, methodName, args[0], method.getReturnType());
+        RpcRequest fullRequest = new RpcRequest();
 
-        RPCMessage<RPCHeader.ResponseHeader> fullResponse = new RPCMessage<>();
+        //logId, serviceName, methodName, args[0], method.getReturnType());
 
+        RpcResponse response = new RpcResponse();
 
         /*FilterChain filterChain = new ClientFilterChain(rpcClient.getFilters(), rpcClient);
         filterChain.doFilter(fullRequest, fullResponse);*/
 
-        Channel channel = RPCConnectManager.getInstance(rpcClient.rpcClientOption).selectChannel(serviceName);
+        Channel channel = rpcClient.getRpcConnectManager().selectChannel(serviceName);
 
 
         //在此处校验并使用同步或异步的判断+超时+其他的校验,分别调用DefaultFuture的不同的方法
         if (!async.booleanValue()) {
-            //DefaultFuture future = new DefaultFuture(rpcClientHandler,fullRequest,null);
-            //DefaultFuture.sent(rpcClientHandler.getChannel(),fullRequest);
+            DefaultFuture future = new DefaultFuture(fullRequest,rpcCallback,3000L);
+            future.sent(channel);
 
-            //fullResponse = DefaultFuture.getFuture(fullRequest.getHeader().getLogId()).get();
-            return fullResponse.getBodyMessage();
+            response = DefaultFuture.getFuture(fullRequest.getRequestId()).get();
+            return response;
         } else {
             //DefaultFuture future = new DefaultFuture(rpcClientHandler,fullRequest,rpcCallback);
             //DefaultFuture.sent(rpcClientHandler.getChannel(),fullRequest);
-            return new RPCMessage<>().getBodyMessage();
+            return response;
         }
     }
 }

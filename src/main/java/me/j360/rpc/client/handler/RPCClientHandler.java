@@ -4,8 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import me.j360.rpc.client.DefaultFuture;
-import me.j360.rpc.codec.protobuf.RPCHeader;
-import me.j360.rpc.codec.protobuf.RPCMessage;
+import me.j360.rpc.codec.protostuff.RpcResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +16,7 @@ import java.net.SocketAddress;
  * Date: 2017/5/17 下午6:49
  * 说明：
  */
-public class RPCClientHandler extends SimpleChannelInboundHandler<RPCMessage<RPCHeader.ResponseHeader>> {
+public class RPCClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RPCClientHandler.class);
 
@@ -41,23 +40,19 @@ public class RPCClientHandler extends SimpleChannelInboundHandler<RPCMessage<RPC
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx,
-                             RPCMessage<RPCHeader.ResponseHeader> fullResponse) throws Exception {
-        String logId = fullResponse.getHeader().getLogId();
-        DefaultFuture future = DefaultFuture.getFuture(logId);
+                             RpcResponse response) throws Exception {
+        Long requestId = response.getRequestId();
+        DefaultFuture future = DefaultFuture.getFuture(requestId);
         if (future == null) {
-            LOG.debug("receive msg from server but no request found, logId={}", logId);
+            LOG.debug("receive msg from server but no request found, logId={}", requestId);
             return;
         }
 
-        /*if (fullResponse.getHeader().getResCode() == RPCHeader.ResCode.RES_SUCCESS) {
-            Method decodeMethod = future.getResponseClass().getMethod("parseFrom", byte[].class);
-            GeneratedMessageV3 responseBody = (GeneratedMessageV3) decodeMethod.invoke(
-                    future.getResponseClass(), fullResponse.getBody());
-            fullResponse.setBodyMessage(responseBody);
-            future.success(fullResponse);
+        if (response.isError()) {
+            future.fail(new RuntimeException(response.getError()));
         } else {
-            future.fail(new RuntimeException(fullResponse.getHeader().getResMsg()));
-        }*/
+            future.success(response);
+        }
     }
 
     @Override

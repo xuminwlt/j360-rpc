@@ -1,11 +1,9 @@
 package me.j360.rpc.client;
 
 import lombok.extern.slf4j.Slf4j;
-import me.j360.rpc.core.Consumer;
 import me.j360.rpc.core.Endpoint;
 
 import java.net.InetSocketAddress;
-import java.util.List;
 
 /**
  * Package: me.j360.rpc.client
@@ -18,18 +16,20 @@ import java.util.List;
 public class RPCClient implements Endpoint{
 
 
-    public RPCClientOption rpcClientOption;
+    private final RPCClientOption rpcClientOption;
+    private RPCConnectManager rpcConnectManager;
 
+    public RPCClient(RPCClientOption rpcClientOption) {
+        this.rpcClientOption = rpcClientOption;
 
-    public RPCClient(List<Consumer> consumers,RPCClientOption rpcClientOption) {
-
-        if (rpcClientOption != null) {
-            this.rpcClientOption = rpcClientOption;
-        } else {
-            this.rpcClientOption = new RPCClientOption();
-        }
+        init();
     }
 
+
+    public void init() {
+
+        rpcConnectManager = RPCConnectManager.getInstance(rpcClientOption);
+    }
 
     public <T> T create(Class<T> interfaceClass) {
         /*return (T) Proxy.newProxyInstance(
@@ -56,6 +56,11 @@ public class RPCClient implements Endpoint{
     }
 
 
+    public RPCClientOption getRpcClientOption() {
+        return rpcClientOption;
+    }
 
-
+    public RPCConnectManager getRpcConnectManager() {
+        return rpcConnectManager;
+    }
 }

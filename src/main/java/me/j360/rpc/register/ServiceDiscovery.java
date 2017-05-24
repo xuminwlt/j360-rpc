@@ -1,7 +1,6 @@
 package me.j360.rpc.register;
 
 import me.j360.rpc.client.RPCClient;
-import me.j360.rpc.client.RPCConnectManager;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryNTimes;
@@ -104,7 +103,7 @@ public class ServiceDiscovery {
                     System.out.println(sss);
 
                     String[] address = sss.split(":");
-                    RPCConnectManager.getInstance(rpcClient.rpcClientOption).addNewConnection(interfaceName,new InetSocketAddress(address[0],Integer.parseInt(address[1])));
+                    rpcClient.getRpcConnectManager().addNewConnection(interfaceName,new InetSocketAddress(address[0],Integer.parseInt(address[1])));
                 }
 
             } catch (Exception e) {
