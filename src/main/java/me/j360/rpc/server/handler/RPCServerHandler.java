@@ -2,14 +2,14 @@ package me.j360.rpc.server.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import me.j360.rpc.codec.protobuf.RPCHeader;
-import me.j360.rpc.codec.protobuf.RPCMessage;
 import me.j360.rpc.codec.protostuff.RpcRequest;
-import me.j360.rpc.server.RPCServer;
+import me.j360.rpc.codec.protostuff.RpcResponse;
 import me.j360.rpc.server.RPCServiceCallManager;
 import me.j360.rpc.server.RPCServiceTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * Package: me.j360.rpc.server.handler
@@ -21,26 +21,24 @@ public class RPCServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RPCServerHandler.class);
 
-    private RPCServer rpcServer;
+    private final Map<String, Object> handlerMap;
 
-    public RPCServerHandler(RPCServer rpcServer) {
-        this.rpcServer = rpcServer;
+    public RPCServerHandler(Map<String, Object> handlerMap) {
+        this.handlerMap = handlerMap;
     }
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx,
                              RpcRequest request) throws Exception {
-        RPCServiceTask task = new RPCServiceTask(ctx.channel(), request, rpcServer);
+        Object serviceBean = request.getClassName();
+
+        RPCServiceTask task = new RPCServiceTask(ctx.channel(), request, serviceBean);
         RPCServiceCallManager.execute(task);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        RPCMessage<RPCHeader.ResponseHeader> response = new RPCMessage<>();
-        RPCHeader.ResponseHeader header = RPCHeader.ResponseHeader.newBuilder()
-                .setResCode(RPCHeader.ResCode.RES_FAIL).setResMsg(cause.getMessage()).build();
-        response.setHeader(header);
-        response.setBody(new byte[]{});
+        RpcResponse response = new RpcResponse();
         ctx.fireChannelRead(response);
     }
 }

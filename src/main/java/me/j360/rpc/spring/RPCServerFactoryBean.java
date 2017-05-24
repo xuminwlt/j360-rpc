@@ -50,7 +50,7 @@ public class RPCServerFactoryBean implements FactoryBean<RPCServer>, Initializin
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        rpcServer = new RPCServer(rpcServerOption,serviceRegister);
+        rpcServer = new RPCServer(rpcServerOption,serviceRegister,handlerMap);
         rpcServer.start();
     }
 

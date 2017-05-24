@@ -9,8 +9,6 @@ import me.j360.rpc.codec.protostuff.RpcResponse;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
-import java.util.Map;
-
 
 /**
  * Package: me.j360.rpc.server
@@ -26,12 +24,11 @@ public class RPCServiceTask implements Runnable{
     private RpcRequest request;
     private Object object;
 
-    private final Map<String, Object> handlerMap;
 
-    public RPCServiceTask(Channel channel,RpcRequest rpcRequest, RPCServer rpcServer) {
+    public RPCServiceTask(Channel channel,RpcRequest rpcRequest,Object object) {
         this.channel = channel;
         this.request = request;
-        this.handlerMap = rpcServer.handlerMap;
+        this.object = object;
 
     }
 
@@ -60,9 +57,8 @@ public class RPCServiceTask implements Runnable{
 
     private Object handle(RpcRequest request) throws Throwable {
         String className = request.getClassName();
-        Object serviceBean = handlerMap.get(className);
 
-        Class<?> serviceClass = serviceBean.getClass();
+        Class<?> serviceClass = object.getClass();
         String methodName = request.getMethodName();
         Class<?>[] parameterTypes = request.getParameterTypes();
         Object[] parameters = request.getParameters();
@@ -84,7 +80,7 @@ public class RPCServiceTask implements Runnable{
         // Cglib reflect
         FastClass serviceFastClass = FastClass.create(serviceClass);
         FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
-        return serviceFastMethod.invoke(serviceBean, parameters);
+        return serviceFastMethod.invoke(object, parameters);
     }
 
 }

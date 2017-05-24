@@ -1,6 +1,5 @@
 package me.j360.rpc.server;
 
-import me.j360.rpc.register.ServiceDiscovery;
 import me.j360.rpc.register.ServiceRegister;
 import org.junit.Test;
 
@@ -31,8 +30,8 @@ public class RegisterTest {
     public void registerDiscoverTest() throws IOException, InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
 
-        ServiceDiscovery serviceDiscovery = new ServiceDiscovery("localhost:2181","me.j360.rpc");
-        serviceDiscovery.init();
+        //ServiceDiscovery serviceDiscovery = new ServiceDiscovery("localhost:2181","me.j360.rpc");
+        //serviceDiscovery.init();
 
         //latch.await();
     }
