@@ -1,7 +1,7 @@
 package me.j360.rpc.client;
 
+import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
-import me.j360.rpc.client.handler.RPCClientHandler;
 import me.j360.rpc.codec.protobuf.RPCHeader;
 import me.j360.rpc.codec.protobuf.RPCMessage;
 import net.sf.cglib.proxy.Enhancer;
@@ -73,7 +73,7 @@ public class RPCProxy<T> implements MethodInterceptor {
         /*FilterChain filterChain = new ClientFilterChain(rpcClient.getFilters(), rpcClient);
         filterChain.doFilter(fullRequest, fullResponse);*/
 
-        RPCClientHandler rpcClientHandler = RPCConnectManager.getInstance(rpcClient.rpcClientOption).selectHandler();
+        Channel channel = RPCConnectManager.getInstance(rpcClient.rpcClientOption).selectChannel(serviceName);
 
 
         //在此处校验并使用同步或异步的判断+超时+其他的校验,分别调用DefaultFuture的不同的方法

@@ -1,10 +1,13 @@
 package me.j360.rpc.register;
 
+import me.j360.rpc.client.RPCClient;
+import me.j360.rpc.client.RPCConnectManager;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryNTimes;
 import org.apache.zookeeper.Watcher;
 
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +15,7 @@ import java.util.List;
  * Package: me.j360.rpc.register
  * User: min_xu
  * Date: 2017/5/23 下午1:22
+ * 单例
  * 说明：定义依赖的服务列表对应的服务提供方列表
  * Map<String interfaceName,List<String serviceAddress>>
  */
@@ -27,12 +31,14 @@ public class ServiceDiscovery {
     private static String ZK_REGISTRY_PATH = "/j360-rpc";
 
     private String[] interfaceNames;
+    private RPCClient rpcClient;
 
     private volatile List<String> dataList = new ArrayList<>();
 
-    public ServiceDiscovery(String zkAddress, String... interfaceNames) {
+    public ServiceDiscovery(RPCClient rpcClient,String zkAddress, String... interfaceNames) {
         this.zkAddress = zkAddress;
         this.interfaceNames = interfaceNames;
+        this.rpcClient = rpcClient;
     }
 
     private static CuratorFramework client;
@@ -96,6 +102,9 @@ public class ServiceDiscovery {
                 list = client.getChildren().forPath(path);
                 for (String sss:list) {
                     System.out.println(sss);
+
+                    String[] address = sss.split(":");
+                    RPCConnectManager.getInstance(rpcClient.rpcClientOption).addNewConnection(interfaceName,new InetSocketAddress(address[0],Integer.parseInt(address[1])));
                 }
 
             } catch (Exception e) {

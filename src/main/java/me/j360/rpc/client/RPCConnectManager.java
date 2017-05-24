@@ -6,36 +6,30 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.extern.slf4j.Slf4j;
-import me.j360.rpc.client.handler.RPCClientHandler;
-import me.j360.rpc.core.Consumer;
-import me.j360.rpc.core.IpPort;
-import me.j360.rpc.core.ProviderConnection;
-import me.j360.rpc.core.ServiceProvider;
 
 import java.net.InetSocketAddress;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Package: me.j360.rpc.client
  * User: min_xu
  * Date: 2017/5/23 下午1:25
- * 说明：
+ * 说明：单例类
  */
 
 @Slf4j
 public class RPCConnectManager {
 
-
-    private static Bootstrap bootstrap;
-
     private RPCClientOption rpcClientOption;
+
 
     /**
      * 因为该rpc只使用单个协议作为传输,所以只需要定义一个Client实例
      * 服务集合内存表,根据依赖的多个服务,一个服务有多个实例
      */
-    private static ConcurrentHashMap<String,ServiceProvider> providerMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String,List<InetSocketAddress>> providerMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<InetSocketAddress,Channel> channelMap = new ConcurrentHashMap<>();
 
     private volatile static RPCConnectManager rpcConnectManager;
 
@@ -56,20 +50,48 @@ public class RPCConnectManager {
         return rpcConnectManager;
     }
 
-    public RPCClientHandler selectHandler() {
-        return new RPCClientHandler();
+    /**
+     * 调用入口
+     * @return
+     */
+    public Channel selectChannel(String interfaceName) {
+
+        //选择,增加判断是否有已经注册并连接上的channel
+        List<InetSocketAddress> list = providerMap.get(interfaceName);
+        InetSocketAddress address = select(list);
+
+        return channelMap.get(address);
+    }
+
+
+    /**
+     * 入口,添加服务远程连接
+     */
+    public void addNewConnection(String interfaceName, InetSocketAddress remoteAddress) {
+
+        //需要去重判断
+        List<InetSocketAddress> list = providerMap.get(interfaceName);
+
+
+        Bootstrap bootstrap = newBootstrap();
+        connect(bootstrap, remoteAddress, interfaceName);
+    }
+
+    /**
+     * 入口,删除服务远程连接
+     */
+    public void removeConnection(String interfaceName, InetSocketAddress remoteAddress) {
+
+        //删除channel,删除服务列表
+
+
     }
 
 
 
-    public void updateServiceConnect() {
 
-    }
-
-
-    protected void doOpen() {
-
-        bootstrap = new Bootstrap();
+    protected Bootstrap newBootstrap() {
+        Bootstrap bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, rpcClientOption.getConnectTimeoutMillis());
         bootstrap.option(ChannelOption.SO_KEEPALIVE, rpcClientOption.isKeepAlive());
@@ -85,69 +107,25 @@ public class RPCConnectManager {
             }
         };
         bootstrap.group(new NioEventLoopGroup()).handler(initializer);
-    }
-
-    protected void doConnect() {
-
-        //连接上所有的服务,如果有必要
-
+        return bootstrap;
     }
 
 
-    /*public Channel getChannel(String ip,int port) {
-
-    }*/
-
-    private void addInitProvider(Consumer consumer) {
-        if (providerMap.containsKey(consumer.getServiceName())) {
-            providerMap.get(consumer.getServiceName()).getConnectionMap().put(consumer.getIpPort(),new ProviderConnection(consumer.getIpPort(),null));
-        } else {
-            ServiceProvider provider = new ServiceProvider();
-            Map<IpPort,ProviderConnection> connections = new ConcurrentHashMap<>();
-            connections.put(consumer.getIpPort(),new ProviderConnection(consumer.getIpPort(),null));
-            provider.setServiceName(consumer.getServiceName());
-            provider.setConnectionMap(connections);
-            providerMap.put(consumer.getServiceName(),provider);
-        }
-    }
-
-    private void removeProvider(Consumer consumer) {
-        if (providerMap.containsKey(consumer.getServiceName())) {
-            //删除connection
-            Map<IpPort,ProviderConnection> map = providerMap.get(consumer.getServiceName()).getConnectionMap();
-            if (map.containsKey(consumer.getIpPort())) {
-                Channel channel = map.get(consumer.getIpPort()).getChannel();
-                if (channel != null) {
-                    map.get(consumer.getIpPort()).getChannel().close();
-                }
-            }
-            //删除服务
-            providerMap.remove(consumer);
-        }
-    }
-
-    private void addProvider(Consumer consumer) {
-        addInitProvider(consumer);
-
-        Map<IpPort,ProviderConnection> map = providerMap.get(consumer.getServiceName()).getConnectionMap();
-        if (map.containsKey(consumer.getIpPort())) {
-            Channel channel = map.get(consumer.getIpPort()).getChannel();
-            if (channel == null) {
-                channel = connect(consumer.getIpPort().getIp(),consumer.getIpPort().getPort());
-                map.get(consumer.getIpPort()).setChannel(channel);
-            }
-
-        }
-    }
 
 
-    public Channel connect(String ip, int port) {
+
+    private Channel connect(Bootstrap bootstrap,InetSocketAddress remoteAddress, String interfaceName) {
         try {
-            final ChannelFuture future = bootstrap.connect(new InetSocketAddress(ip, port));
+            final ChannelFuture future = bootstrap.connect();
             future.addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
                     if (channelFuture.isSuccess()) {
+
+                        //需要去重判断
+                        channelMap.put(remoteAddress,channelFuture.channel());
+                        providerMap.get(interfaceName).add(remoteAddress);
+
                         log.debug("Connection {} is established", channelFuture.channel());
                     } else {
                         log.warn(String.format("Connection get failed on {} due to {}",
@@ -157,15 +135,25 @@ public class RPCConnectManager {
             });
             future.awaitUninterruptibly();
             if (future.isSuccess()) {
-                log.debug("connect {}:{} success", ip, port);
+                log.debug("connect {} success", remoteAddress.toString());
                 return future.channel();
             } else {
-                log.warn("connect {}:{} failed", ip, port);
+                log.warn("connect {} failed", remoteAddress.toString());
                 return null;
             }
         } catch (Exception e) {
-            log.error("failed to connect to {}:{} due to {}", ip, port, e.getMessage());
+            log.error("failed to connect to {} due to {}", remoteAddress.toString(), e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * 选择算法模拟方法
+     * 轮训
+     * 哈希
+     * @return
+     */
+    private InetSocketAddress select(List<InetSocketAddress> list){
+        return list.get(0);
     }
 }
