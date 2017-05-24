@@ -15,6 +15,7 @@ public class RegisterTest {
     @Test
     public void registerTest() {
         ServiceRegister serviceRegister = new ServiceRegister("localhost:2181");
-        serviceRegister.register("me.j360.rpc");
+        serviceRegister.register("me.j360.rpc","127.0.0.1:20880");
+
     }
 }

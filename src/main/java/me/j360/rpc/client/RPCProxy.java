@@ -78,15 +78,15 @@ public class RPCProxy<T> implements MethodInterceptor {
 
         //在此处校验并使用同步或异步的判断+超时+其他的校验,分别调用DefaultFuture的不同的方法
         if (!async.booleanValue()) {
-            DefaultFuture future = new DefaultFuture(rpcClientHandler,fullRequest,null);
-            DefaultFuture.sent(rpcClientHandler.getChannel(),fullRequest);
+            //DefaultFuture future = new DefaultFuture(rpcClientHandler,fullRequest,null);
+            //DefaultFuture.sent(rpcClientHandler.getChannel(),fullRequest);
 
-            fullResponse = DefaultFuture.getFuture(fullRequest.getHeader().getLogId()).get();
+            //fullResponse = DefaultFuture.getFuture(fullRequest.getHeader().getLogId()).get();
             return fullResponse.getBodyMessage();
         } else {
-            DefaultFuture future = new DefaultFuture(rpcClientHandler,fullRequest,rpcCallback);
-            DefaultFuture.sent(rpcClientHandler.getChannel(),fullRequest);
-            new RPCMessage<>().getBodyMessage();
+            //DefaultFuture future = new DefaultFuture(rpcClientHandler,fullRequest,rpcCallback);
+            //DefaultFuture.sent(rpcClientHandler.getChannel(),fullRequest);
+            return new RPCMessage<>().getBodyMessage();
         }
     }
 }

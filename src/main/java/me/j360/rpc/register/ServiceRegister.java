@@ -26,8 +26,8 @@ public class ServiceRegister {
     private static int RETRY_INTERVAL = 3000;
     private static int CONNECT_TIMEOUT = 3000;
 
-    private static String ZK_REGISTRY_PATH = "/registry";
-    private static String ZK_DATA_PATH = "/data";
+    private static String ZK_REGISTRY_PATH = "/j360-rpc";
+    private static String ZK_PROVIDER_PATH = "/provider";
 
     private String zkAddress;
 
@@ -42,26 +42,31 @@ public class ServiceRegister {
     }
 
 
-    public void register(String data) {
-        if (data != null) {
+    public void register(String interfaceName, String serviceAddress) {
+        if (interfaceName != null) {
             client = getClient();
             if (client != null) {
-                createNode(data);
+                createNode(interfaceName, serviceAddress);
             }
         }
     }
 
 
-    private void createNode(String data) {
+    private void createNode(String interfaceName, String serviceAddress) {
         try {
             Stat stat = client.checkExists().forPath(ZK_REGISTRY_PATH);
             if (null == stat) {
-                client.create().withMode(CreateMode.PERSISTENT).forPath(ZK_DATA_PATH, new byte[0]);
+                client.create().withMode(CreateMode.PERSISTENT).forPath(ZK_REGISTRY_PATH, new byte[0]);
             }
-
-            client.create().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(ZK_DATA_PATH,data.getBytes());
+            stat = client.checkExists().forPath(ZK_REGISTRY_PATH + "/" + interfaceName);
+            if (null == stat) {
+                client.create().withMode(CreateMode.PERSISTENT).forPath(ZK_REGISTRY_PATH + "/" + interfaceName, new byte[0]);
+                client.create().withMode(CreateMode.PERSISTENT).forPath(ZK_REGISTRY_PATH + "/" + interfaceName + ZK_PROVIDER_PATH, new byte[0]);
+            }
+            String registerAddress = ZK_REGISTRY_PATH + "/" + interfaceName + ZK_PROVIDER_PATH + "/" + serviceAddress;
+            client.create().withMode(CreateMode.EPHEMERAL).forPath(registerAddress,serviceAddress.getBytes());
         } catch (Exception e) {
-            log.error("创建节点失败:[{}]",data,e);
+            log.error("创建节点失败:[{},{}]",interfaceName, serviceAddress,e);
         }
     }
 

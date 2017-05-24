@@ -8,8 +8,6 @@ import me.j360.rpc.codec.protobuf.RPCMessage;
 import me.j360.rpc.codec.protostuff.RpcRequest;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -98,7 +96,7 @@ public class DefaultFuture<T> implements ResponseFuture {
         }
     }
 
-    public RPCMessage<RPCHeader.ResponseHeader> get() throws InterruptedException {
+    /*public RPCMessage<RPCHeader.ResponseHeader> get() throws InterruptedException {
         latch.await();
         if (error != null) {
             log.warn("error occurs due to {}", error.getMessage());
@@ -138,7 +136,7 @@ public class DefaultFuture<T> implements ResponseFuture {
                     RPCHeader.ResCode.RES_FAIL, "time out");
         }
         return fullResponse;
-    }
+    }*/
 
     /*public Class getResponseClass() {
         return fullRequest.getResponseBodyClass();

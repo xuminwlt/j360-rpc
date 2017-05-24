@@ -3,6 +3,7 @@ package me.j360.rpc.codec.protostuff;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import me.j360.rpc.codec.SerializationUtil;
 
 import java.util.List;
 

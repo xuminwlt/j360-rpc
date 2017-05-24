@@ -1,6 +1,5 @@
 package me.j360.rpc.client.handler;
 
-import com.google.protobuf.GeneratedMessageV3;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -10,7 +9,6 @@ import me.j360.rpc.codec.protobuf.RPCMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
 import java.net.SocketAddress;
 
 /**
@@ -51,7 +49,7 @@ public class RPCClientHandler extends SimpleChannelInboundHandler<RPCMessage<RPC
             return;
         }
 
-        if (fullResponse.getHeader().getResCode() == RPCHeader.ResCode.RES_SUCCESS) {
+        /*if (fullResponse.getHeader().getResCode() == RPCHeader.ResCode.RES_SUCCESS) {
             Method decodeMethod = future.getResponseClass().getMethod("parseFrom", byte[].class);
             GeneratedMessageV3 responseBody = (GeneratedMessageV3) decodeMethod.invoke(
                     future.getResponseClass(), fullResponse.getBody());
@@ -59,7 +57,7 @@ public class RPCClientHandler extends SimpleChannelInboundHandler<RPCMessage<RPC
             future.success(fullResponse);
         } else {
             future.fail(new RuntimeException(fullResponse.getHeader().getResMsg()));
-        }
+        }*/
     }
 
     @Override

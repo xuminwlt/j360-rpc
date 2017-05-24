@@ -6,7 +6,7 @@ package me.j360.rpc.codec.protostuff;
  */
 public class RpcResponse {
 
-    private String requestId;
+    private Long requestId;
     private String error;
     private Object result;
 
@@ -14,11 +14,11 @@ public class RpcResponse {
         return error != null;
     }
 
-    public String getRequestId() {
+    public Long getRequestId() {
         return requestId;
     }
 
-    public void setRequestId(String requestId) {
+    public void setRequestId(Long requestId) {
         this.requestId = requestId;
     }
 
