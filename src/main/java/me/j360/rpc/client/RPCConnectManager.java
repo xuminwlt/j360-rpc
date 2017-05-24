@@ -70,11 +70,15 @@ public class RPCConnectManager {
     public void addNewConnection(String interfaceName, InetSocketAddress remoteAddress) {
 
         //需要去重判断
-        List<InetSocketAddress> list = providerMap.get(interfaceName);
+        if (!channelMap.containsKey(remoteAddress)) {
+            Bootstrap bootstrap = newBootstrap();
+            connect(bootstrap, remoteAddress, interfaceName);
+        } else {
+            Channel channel = channelMap.get(remoteAddress);
+            if (!channel.isActive()) {
 
-
-        Bootstrap bootstrap = newBootstrap();
-        connect(bootstrap, remoteAddress, interfaceName);
+            }
+        }
     }
 
     /**
@@ -111,7 +115,41 @@ public class RPCConnectManager {
     }
 
 
+    /**
+     * 重连
+     * @param channel
+     * @param remoteAddress
+     */
+    private void reconnect(Channel channel, InetSocketAddress remoteAddress) {
+        try {
+            final ChannelFuture future = channel.connect(remoteAddress);
+            future.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                    if (channelFuture.isSuccess()) {
 
+                        //需要去重判断
+                        channelMap.put(remoteAddress,channelFuture.channel());
+
+                        log.debug("Connection {} is established", channelFuture.channel());
+                    } else {
+                        log.warn(String.format("Connection get failed on {} due to {}",
+                                channelFuture.cause().getMessage(), channelFuture.cause()));
+                    }
+                }
+            });
+            future.awaitUninterruptibly();
+            if (future.isSuccess()) {
+                log.debug("connect {} success", remoteAddress.toString());
+
+            } else {
+                log.warn("connect {} failed", remoteAddress.toString());
+
+            }
+        } catch (Exception e) {
+            log.error("failed to connect to {} due to {}", remoteAddress.toString(), e.getMessage());
+        }
+    }
 
 
     private Channel connect(Bootstrap bootstrap,InetSocketAddress remoteAddress, String interfaceName) {
