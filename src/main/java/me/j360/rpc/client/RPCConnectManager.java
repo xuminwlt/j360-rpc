@@ -1,6 +1,7 @@
 package me.j360.rpc.client;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -87,11 +88,16 @@ public class RPCConnectManager {
     public void removeConnection(String interfaceName, InetSocketAddress remoteAddress) {
 
         //删除channel,删除服务列表
-
+        Channel channel = channelMap.get(remoteAddress);
+        if (null != channel) {
+            close(channel);
+        }
 
     }
 
-
+    private void close(Channel channel) {
+        channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+    }
 
 
     protected Bootstrap newBootstrap() {
