@@ -3,7 +3,6 @@ package me.j360.rpc.register;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryNTimes;
-import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 
 import java.util.ArrayList;
@@ -13,7 +12,8 @@ import java.util.List;
  * Package: me.j360.rpc.register
  * User: min_xu
  * Date: 2017/5/23 下午1:22
- * 说明：
+ * 说明：定义依赖的服务列表对应的服务提供方列表
+ * Map<String interfaceName,List<String serviceAddress>>
  */
 public class ServiceDiscovery {
 
@@ -24,19 +24,20 @@ public class ServiceDiscovery {
     private static int RETRY_INTERVAL = 3000;
     private static int CONNECT_TIMEOUT = 3000;
 
-    private static String ZK_REGISTRY_PATH = "/registry";
-    private static String ZK_DATA_PATH = "/data";
+    private static String ZK_REGISTRY_PATH = "/j360-rpc";
 
+    private String[] interfaceNames;
 
     private volatile List<String> dataList = new ArrayList<>();
 
-    public ServiceDiscovery(String zkAddress) {
+    public ServiceDiscovery(String zkAddress, String... interfaceNames) {
         this.zkAddress = zkAddress;
+        this.interfaceNames = interfaceNames;
     }
 
     private static CuratorFramework client;
 
-    private void init() {
+    public void init() {
 
         client = getClient();
         if (client != null) {
@@ -68,19 +69,38 @@ public class ServiceDiscovery {
 
     private void watchNode() {
 
-        Watcher watcher = new Watcher() {
-            @Override
-            public void process(WatchedEvent event) {
-                if (event.getType() == Event.EventType.NodeChildrenChanged) {
-                    watchNode();
+        for (String interfaceName:interfaceNames) {
+            String path = ZK_REGISTRY_PATH + "/" + interfaceName + "/provider";
+
+            /*Watcher watcher = new Watcher() {
+                @Override
+                public void process(WatchedEvent event) {
+                    if (event.getType() == Event.EventType.NodeChildrenChanged) {
+                        watchNode();
+                    }
                 }
+            };
+
+            try {
+                dataList = watchedGetChildren(path,watcher);
+            } catch (Exception e) {
+
             }
-        };
 
-        try {
-            dataList = watchedGetChildren(ZK_REGISTRY_PATH + ZK_DATA_PATH,watcher);
-        } catch (Exception e) {
+            for (String sss:dataList) {
+                System.out.println(sss);
+            }*/
 
+            List<String> list = null;
+            try {
+                list = client.getChildren().forPath(path);
+                for (String sss:list) {
+                    System.out.println(sss);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
 

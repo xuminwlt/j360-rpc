@@ -52,6 +52,11 @@ public class ServiceRegister {
     }
 
 
+    /**
+     * 注册服务及服务地址
+     * @param interfaceName
+     * @param serviceAddress
+     */
     private void createNode(String interfaceName, String serviceAddress) {
         try {
             Stat stat = client.checkExists().forPath(ZK_REGISTRY_PATH);
