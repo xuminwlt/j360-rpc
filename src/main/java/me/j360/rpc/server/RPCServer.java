@@ -37,7 +37,7 @@ public class RPCServer implements Endpoint {
 
     public  Map<String, Object> handlerMap;
 
-    private InetSocketAddress socketAddress;
+    private InetSocketAddress socketAddress = new InetSocketAddress("127.0.0.1",20880);
 
 
     public RPCServer(RPCServerOption rpcServerOption, ServiceRegister serviceRegister,Map<String, Object> handlerMap) {
@@ -56,10 +56,6 @@ public class RPCServer implements Endpoint {
      */
     public void start() {
         startServer();
-
-        registerZk();
-
-        startTaskExecuter();
     }
 
     @Override
@@ -93,6 +89,9 @@ public class RPCServer implements Endpoint {
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
 
+            registerZk();
+
+            startTaskExecuter();
 
             ChannelFuture future = bootstrap.bind(socketAddress.getHostName(),socketAddress.getPort()).sync();
             log.debug("Server started on port {}", socketAddress.getPort());

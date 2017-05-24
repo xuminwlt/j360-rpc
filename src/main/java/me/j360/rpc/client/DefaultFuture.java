@@ -7,6 +7,7 @@ import me.j360.rpc.codec.protostuff.RpcResponse;
 
 import java.util.Map;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Package: me.j360.rpc.client
@@ -23,6 +24,7 @@ public class DefaultFuture<T> implements ResponseFuture {
     //保存请求及返回的对象
     private static final Map<String, DefaultFuture> FUTURES   = new ConcurrentHashMap<String, DefaultFuture>();
 
+    private static AtomicLong atomicLong = new AtomicLong();
 
     private static ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 
@@ -137,6 +139,7 @@ public class DefaultFuture<T> implements ResponseFuture {
 
 
     public void sent(Channel channel) {
+        fullRequest.setRequestId(atomicLong.incrementAndGet());
         channel.writeAndFlush(fullRequest);
     }
 
