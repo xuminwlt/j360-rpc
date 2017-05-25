@@ -30,7 +30,7 @@ public class RPCServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
     @Override
     public void channelRead0(ChannelHandlerContext ctx,
                              RpcRequest request) throws Exception {
-        Object serviceBean = request.getClassName();
+        Object serviceBean = handlerMap.get(request.getClassName());
 
         RPCServiceTask task = new RPCServiceTask(ctx.channel(), request, serviceBean);
         RPCServiceCallManager.execute(task);

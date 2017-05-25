@@ -26,6 +26,7 @@ public class ServerTest {
         ServiceRegister serviceRegister = new ServiceRegister("localhost:2181");
 
         handlerMap.put(UserService.class.getCanonicalName(),new UserServiceImpl());
+
         RPCServer rpcServer = new RPCServer(rpcServerOption,serviceRegister,handlerMap);
         rpcServer.start();
 

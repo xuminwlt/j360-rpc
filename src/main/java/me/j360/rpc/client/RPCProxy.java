@@ -9,7 +9,6 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
-import java.util.UUID;
 
 
 @SuppressWarnings("unchecked")
@@ -60,25 +59,22 @@ public class RPCProxy<T> implements MethodInterceptor {
     public Object intercept(Object obj, Method method, Object[] args,
                             MethodProxy proxy) throws Throwable {
 
-        final String logId = UUID.randomUUID().toString();
-        final String serviceName = method.getDeclaringClass().getSimpleName();
         final String methodName = method.getName();
         final String interfaceName = method.getDeclaringClass().getCanonicalName();
         RpcRequest fullRequest = new RpcRequest();
 
         //logId, serviceName, methodName, args[0], method.getReturnType());
-
         RpcResponse response = new RpcResponse();
-        fullRequest.setClassName(serviceName);
+        fullRequest.setClassName(interfaceName);
         fullRequest.setMethodName(methodName);
         fullRequest.setParameters(args);
         fullRequest.setParameterTypes(method.getParameterTypes());
 
+        //后期使用过类似Servlet滤器链解决多元配置化问题
         /*FilterChain filterChain = new ClientFilterChain(rpcClient.getFilters(), rpcClient);
         filterChain.doFilter(fullRequest, fullResponse);*/
 
         Channel channel = rpcClient.getRpcConnectManager().selectChannel(interfaceName);
-
 
         //在此处校验并使用同步或异步的判断+超时+其他的校验,分别调用DefaultFuture的不同的方法
         if (!async.booleanValue()) {
@@ -88,10 +84,12 @@ public class RPCProxy<T> implements MethodInterceptor {
             response = DefaultFuture.getFuture(fullRequest.getRequestId()).get();
 
             DefaultFuture.removeRPCFuture(fullRequest.getRequestId());
-            return response;
+
+            return response.getResult();
         } else {
             //DefaultFuture future = new DefaultFuture(rpcClientHandler,fullRequest,rpcCallback);
             //DefaultFuture.sent(rpcClientHandler.getChannel(),fullRequest);
+
             return response;
         }
     }

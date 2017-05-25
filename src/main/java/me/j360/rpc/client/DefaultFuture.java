@@ -26,7 +26,7 @@ public class DefaultFuture<T> implements ResponseFuture {
 
     private static AtomicLong atomicLong = new AtomicLong();
 
-    private static ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 
     private CountDownLatch latch;
     private ScheduledFuture scheduledFuture;
@@ -39,20 +39,10 @@ public class DefaultFuture<T> implements ResponseFuture {
 
     public DefaultFuture(RpcRequest fullRequest,
                      RPCCallback<T> callback,Long readTimeout) {
-        /*if (fullRequest.getResponseBodyClass() == null && callback == null) {
-            log.error("responseClass or callback must have one not null only");
-            return;
-        }*/
         this.fullRequest = fullRequest;
-        this.scheduledFuture = scheduledFuture;
         this.callback = callback;
-        /*if (this.fullRequest.getResponseBodyClass() == null) {
-            Type type = callback.getClass().getGenericInterfaces()[0];
-            Class clazz = (Class) ((ParameterizedType) type).getActualTypeArguments()[0];
-            this.fullRequest.setResponseBodyClass(clazz);
-        }*/
 
-        scheduledExecutor.schedule(new Runnable() {
+        this.scheduledFuture = scheduledExecutor.schedule(new Runnable() {
             @Override
             public void run() {
                 DefaultFuture rpcFuture = DefaultFuture.removeRPCFuture(fullRequest.getRequestId());
