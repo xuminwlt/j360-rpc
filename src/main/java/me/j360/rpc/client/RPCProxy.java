@@ -9,6 +9,7 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 
 @SuppressWarnings("unchecked")
@@ -69,6 +70,7 @@ public class RPCProxy<T> implements MethodInterceptor {
         fullRequest.setMethodName(methodName);
         fullRequest.setParameters(args);
         fullRequest.setParameterTypes(method.getParameterTypes());
+        fullRequest.setHeaders(new HashMap<String,String>());
 
         //后期使用过类似Servlet滤器链解决多元配置化问题
         /*FilterChain filterChain = new ClientFilterChain(rpcClient.getFilters(), rpcClient);
