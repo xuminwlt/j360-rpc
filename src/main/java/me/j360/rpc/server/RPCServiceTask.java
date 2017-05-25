@@ -27,7 +27,7 @@ public class RPCServiceTask implements Runnable{
 
     public RPCServiceTask(Channel channel,RpcRequest rpcRequest,Object object) {
         this.channel = channel;
-        this.request = request;
+        this.request = rpcRequest;
         this.object = object;
 
     }

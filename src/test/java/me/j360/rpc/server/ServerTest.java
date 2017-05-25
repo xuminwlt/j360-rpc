@@ -2,6 +2,8 @@ package me.j360.rpc.server;
 
 import com.google.common.collect.Maps;
 import me.j360.rpc.register.ServiceRegister;
+import me.j360.rpc.service.UserService;
+import me.j360.rpc.service.UserServiceImpl;
 import org.junit.Test;
 
 import java.util.Map;
@@ -23,7 +25,7 @@ public class ServerTest {
         RPCServerOption rpcServerOption = new RPCServerOption();
         ServiceRegister serviceRegister = new ServiceRegister("localhost:2181");
 
-        handlerMap.put(ServerTest.class.getCanonicalName(),new ServerTest());
+        handlerMap.put(UserService.class.getCanonicalName(),new UserServiceImpl());
         RPCServer rpcServer = new RPCServer(rpcServerOption,serviceRegister,handlerMap);
         rpcServer.start();
 

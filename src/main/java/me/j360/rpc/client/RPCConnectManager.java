@@ -1,5 +1,6 @@
 package me.j360.rpc.client;
 
+import com.google.common.collect.Lists;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -17,6 +18,7 @@ import me.j360.rpc.codec.protostuff.RpcResponse;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Package: me.j360.rpc.client
@@ -41,6 +43,7 @@ public class RPCConnectManager {
     private volatile static RPCConnectManager rpcConnectManager;
 
 
+    private CountDownLatch latch = new CountDownLatch(1);
     private RPCConnectManager(RPCClientOption rpcClientOption) {
         this.rpcClientOption = rpcClientOption;
     }
@@ -65,6 +68,14 @@ public class RPCConnectManager {
 
         //选择,增加判断是否有已经注册并连接上的channel
         List<InetSocketAddress> list = providerMap.get(interfaceName);
+
+        if (null == list) {
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         InetSocketAddress address = select(list);
 
         return channelMap.get(address);
@@ -178,8 +189,16 @@ public class RPCConnectManager {
 
                         //需要去重判断
                         channelMap.put(remoteAddress,channelFuture.channel());
-                        providerMap.get(interfaceName).add(remoteAddress);
 
+                        if (providerMap.containsKey(interfaceName)) {
+                            providerMap.get(interfaceName).add(remoteAddress);
+                        } else {
+                            List<InetSocketAddress> list = Lists.newArrayList();
+                            list.add(remoteAddress);
+                            providerMap.put(interfaceName,list);
+                        }
+
+                        latch.countDown();
                         log.debug("Connection {} is established", channelFuture.channel());
                     } else {
                         log.warn(String.format("Connection get failed on {} due to {}",

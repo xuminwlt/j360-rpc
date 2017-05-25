@@ -19,10 +19,10 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 public class DefaultFuture<T> implements ResponseFuture {
 
-    private static final Map<String, Channel> CHANNELS   = new ConcurrentHashMap<String, Channel>();
+    private static final Map<Long, Channel> CHANNELS   = new ConcurrentHashMap<Long, Channel>();
 
     //保存请求及返回的对象
-    private static final Map<String, DefaultFuture> FUTURES   = new ConcurrentHashMap<String, DefaultFuture>();
+    private static final Map<Long, DefaultFuture> FUTURES   = new ConcurrentHashMap<Long, DefaultFuture>();
 
     private static AtomicLong atomicLong = new AtomicLong();
 
@@ -72,6 +72,7 @@ public class DefaultFuture<T> implements ResponseFuture {
     public void success(RpcResponse response) {
         this.fullResponse = response;
         scheduledFuture.cancel(true);
+
         latch.countDown();
         if (callback != null) {
             callback.success((T) fullResponse);
@@ -81,6 +82,7 @@ public class DefaultFuture<T> implements ResponseFuture {
     public void fail(Throwable error) {
         this.error = error;
         scheduledFuture.cancel(true);
+
         latch.countDown();
         if (callback != null) {
             callback.fail(error);
@@ -129,7 +131,8 @@ public class DefaultFuture<T> implements ResponseFuture {
     }
 
     public static DefaultFuture getFuture(Long id) {
-        return FUTURES.get(id);
+        DefaultFuture future = FUTURES.get(id);
+        return future;
     }
 
     public static boolean hasFuture(Channel channel) {
@@ -140,6 +143,10 @@ public class DefaultFuture<T> implements ResponseFuture {
 
     public void sent(Channel channel) {
         fullRequest.setRequestId(atomicLong.incrementAndGet());
+
+        FUTURES.put(fullRequest.getRequestId(),DefaultFuture.this);
+        CHANNELS.put(fullRequest.getRequestId(),channel);
+
         channel.writeAndFlush(fullRequest);
     }
 
@@ -148,6 +155,7 @@ public class DefaultFuture<T> implements ResponseFuture {
         DefaultFuture future = FUTURES.get(id);
         if (future != null) {
             FUTURES.remove(id);
+            CHANNELS.remove(id);
         }
         return future;
     }

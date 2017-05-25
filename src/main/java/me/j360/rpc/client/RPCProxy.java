@@ -63,17 +63,21 @@ public class RPCProxy<T> implements MethodInterceptor {
         final String logId = UUID.randomUUID().toString();
         final String serviceName = method.getDeclaringClass().getSimpleName();
         final String methodName = method.getName();
-
+        final String interfaceName = method.getDeclaringClass().getCanonicalName();
         RpcRequest fullRequest = new RpcRequest();
 
         //logId, serviceName, methodName, args[0], method.getReturnType());
 
         RpcResponse response = new RpcResponse();
+        fullRequest.setClassName(serviceName);
+        fullRequest.setMethodName(methodName);
+        fullRequest.setParameters(args);
+        fullRequest.setParameterTypes(method.getParameterTypes());
 
         /*FilterChain filterChain = new ClientFilterChain(rpcClient.getFilters(), rpcClient);
         filterChain.doFilter(fullRequest, fullResponse);*/
 
-        Channel channel = rpcClient.getRpcConnectManager().selectChannel(serviceName);
+        Channel channel = rpcClient.getRpcConnectManager().selectChannel(interfaceName);
 
 
         //在此处校验并使用同步或异步的判断+超时+其他的校验,分别调用DefaultFuture的不同的方法
@@ -82,6 +86,8 @@ public class RPCProxy<T> implements MethodInterceptor {
             future.sent(channel);
 
             response = DefaultFuture.getFuture(fullRequest.getRequestId()).get();
+
+            DefaultFuture.removeRPCFuture(fullRequest.getRequestId());
             return response;
         } else {
             //DefaultFuture future = new DefaultFuture(rpcClientHandler,fullRequest,rpcCallback);

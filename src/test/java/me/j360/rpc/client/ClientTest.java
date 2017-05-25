@@ -1,6 +1,8 @@
 package me.j360.rpc.client;
 
+import me.j360.rpc.model.UserDO;
 import me.j360.rpc.register.ServiceDiscovery;
+import me.j360.rpc.service.UserService;
 import org.junit.Test;
 
 /**
@@ -25,7 +27,13 @@ public class ClientTest {
 
         rpcClient.init();
 
-        ServiceDiscovery serviceDiscovery = new ServiceDiscovery(rpcClient,"localhost:2181","me.j360.rpc.server.ServerTest");
+        ServiceDiscovery serviceDiscovery = new ServiceDiscovery(rpcClient,"localhost:2181", UserService.class.getCanonicalName());
         serviceDiscovery.init();
+
+
+        UserService userService = rpcClient.create(UserService.class);
+        UserDO userDO = userService.getUser(1L);
+
+        System.out.println(userDO.toString());
     }
 }
