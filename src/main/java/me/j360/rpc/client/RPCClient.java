@@ -21,8 +21,6 @@ public class RPCClient implements Endpoint{
 
     public RPCClient(RPCClientOption rpcClientOption) {
         this.rpcClientOption = rpcClientOption;
-
-        init();
     }
 
 

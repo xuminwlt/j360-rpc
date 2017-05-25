@@ -6,7 +6,13 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import lombok.extern.slf4j.Slf4j;
+import me.j360.rpc.client.handler.RPCClientHandler;
+import me.j360.rpc.codec.protostuff.RpcDecoder;
+import me.j360.rpc.codec.protostuff.RpcEncoder;
+import me.j360.rpc.codec.protostuff.RpcRequest;
+import me.j360.rpc.codec.protostuff.RpcResponse;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -36,7 +42,7 @@ public class RPCConnectManager {
 
 
     private RPCConnectManager(RPCClientOption rpcClientOption) {
-
+        this.rpcClientOption = rpcClientOption;
     }
 
     public static RPCConnectManager getInstance(RPCClientOption rpcClientOption) {
@@ -112,8 +118,12 @@ public class RPCConnectManager {
 
         ChannelInitializer<SocketChannel> initializer = new ChannelInitializer<SocketChannel>() {
             @Override
-            protected void initChannel(SocketChannel ch) throws Exception {
-
+            protected void initChannel(SocketChannel channel) throws Exception {
+                channel.pipeline()
+                        .addLast(new RpcEncoder(RpcRequest.class))
+                        .addLast(new LengthFieldBasedFrameDecoder(65536,0,4,0,0))
+                        .addLast(new RpcDecoder(RpcResponse.class))
+                        .addLast(new RPCClientHandler());
             }
         };
         bootstrap.group(new NioEventLoopGroup()).handler(initializer);
@@ -160,7 +170,7 @@ public class RPCConnectManager {
 
     private Channel connect(Bootstrap bootstrap,InetSocketAddress remoteAddress, String interfaceName) {
         try {
-            final ChannelFuture future = bootstrap.connect();
+            final ChannelFuture future = bootstrap.connect(remoteAddress);
             future.addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
@@ -186,7 +196,7 @@ public class RPCConnectManager {
                 return null;
             }
         } catch (Exception e) {
-            log.error("failed to connect to {} due to {}", remoteAddress.toString(), e.getMessage());
+            log.error("failed to connect to {} due to {}", remoteAddress.toString(), e.getMessage(),e);
             return null;
         }
     }
