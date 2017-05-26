@@ -7,10 +7,13 @@
     <groupId>me.j360.rpc</groupId>
     <artifactId>j360-rpc</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.0-RELEASE</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <scm>
-        <developerConnection>https://github.com/xuminwlt/j360-rpc.git</developerConnection>
+        <connection>scm:git:https://github.com/xuminwlt/j360-rpc.git</connection>
+        <url>https://github.com/xuminwlt/j360-rpc</url>
+        <developerConnection>scm:git:https://github.com/xuminwlt/j360-rpc.git</developerConnection>
+        <tag>1.0.0</tag>
     </scm>
 
     <properties>
