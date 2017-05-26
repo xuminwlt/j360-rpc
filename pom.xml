@@ -9,6 +9,10 @@
     <packaging>jar</packaging>
     <version>1.0.0-RELEASE</version>
 
+    <scm>
+        <developerConnection>https://github.com/xuminwlt/j360-rpc.git</developerConnection>
+    </scm>
+
     <properties>
         <spring.data.redis.version>1.4.2.RELEASE</spring.data.redis.version>
         <spring.version>4.1.6.RELEASE</spring.version>
