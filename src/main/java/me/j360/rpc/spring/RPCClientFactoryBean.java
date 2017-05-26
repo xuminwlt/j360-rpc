@@ -1,6 +1,6 @@
 package me.j360.rpc.spring;
 
-import me.j360.rpc.server.RPCServer;
+import me.j360.rpc.client.RPCClient;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
@@ -15,7 +15,7 @@ import org.springframework.context.ApplicationContextAware;
  * 说明：use with @import
  */
 
-public class RPCClientFactoryBean implements FactoryBean<RPCServer>, InitializingBean, DisposableBean, ApplicationContextAware {
+public class RPCClientFactoryBean implements FactoryBean<RPCClient>, InitializingBean, DisposableBean, ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -28,7 +28,7 @@ public class RPCClientFactoryBean implements FactoryBean<RPCServer>, Initializin
     }
 
     @Override
-    public RPCServer getObject() throws Exception {
+    public RPCClient getObject() throws Exception {
         return null;
     }
 

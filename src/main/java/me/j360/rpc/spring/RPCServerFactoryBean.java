@@ -27,21 +27,22 @@ public class RPCServerFactoryBean implements FactoryBean<RPCServer>, Initializin
 
     private RPCServer rpcServer;
 
-    private final RPCServerOption rpcServerOption;
+    private RPCServerOption rpcServerOption;
 
-    private final ServiceRegister serviceRegister;
+    private ServiceRegister serviceRegister;
 
-    public RPCServerFactoryBean(RPCServerOption rpcServerOption, ServiceRegister serviceRegister) {
-        this.rpcServerOption = rpcServerOption;
-        this.serviceRegister = serviceRegister;
+
+    public RPCServerFactoryBean(){
+
     }
+
 
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
         Map<String, Object> serviceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);
         if (MapUtils.isNotEmpty(serviceBeanMap)) {
             for (Object serviceBean : serviceBeanMap.values()) {
-                String interfaceName = serviceBean.getClass().getAnnotation(RpcService.class).value().getName();
+                String interfaceName = serviceBean.getClass().getInterfaces()[0].getCanonicalName();
                 handlerMap.put(interfaceName, serviceBean);
             }
         }
@@ -73,5 +74,13 @@ public class RPCServerFactoryBean implements FactoryBean<RPCServer>, Initializin
     public void destroy() throws Exception {
         //销毁Server
         rpcServer.shutdown();
+    }
+
+    public void setRpcServerOption(RPCServerOption rpcServerOption) {
+        this.rpcServerOption = rpcServerOption;
+    }
+
+    public void setServiceRegister(ServiceRegister serviceRegister) {
+        this.serviceRegister = serviceRegister;
     }
 }

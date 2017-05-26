@@ -33,10 +33,19 @@ public class RPCClientConfiguration {
 
 
     @Bean
-    public RPCClient rpcClient() {
+    public RPCClientFactoryBean rpcClientFactoryBean() {
         return null;
     }
 
+    @Bean
+    public RPCClient rpcClient() {
+        try {
+            return rpcClientFactoryBean().getObject();
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
 
     @Bean
     public ServiceDiscovery serviceDiscovery() {

@@ -11,7 +11,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class ServerBootstrap {
 
     public static void main(String[] args) {
-        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(RPCServerFactoryBean.class);
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(RPCServerConfiguration.class);
         ctx.start();
 
     }
