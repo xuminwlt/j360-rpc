@@ -14,22 +14,16 @@ import java.util.Map;
  * Date: 2017/5/24 下午10:44
  * 说明：
  */
-public class ServerTest {
+public class ServerNativeTest {
 
 
     @Test
-    public void serverTest() {
-
+    public void serverStartTest() {
         Map<String,Object> handlerMap = Maps.newHashMap();
-
         RPCServerOption rpcServerOption = new RPCServerOption();
         ServiceRegister serviceRegister = new ServiceRegister("localhost:2181");
-
         handlerMap.put(UserService.class.getCanonicalName(),new UserServiceImpl());
-
         RPCServer rpcServer = new RPCServer(rpcServerOption,serviceRegister,handlerMap);
         rpcServer.start();
-
-
     }
 }

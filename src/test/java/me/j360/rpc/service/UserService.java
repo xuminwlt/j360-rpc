@@ -10,6 +10,10 @@ import me.j360.rpc.model.UserDO;
  */
 public interface UserService {
 
-
+    /**
+     * 获取用户基本信息
+     * @param uid
+     * @return
+     */
     UserDO getUser(Long uid);
 }

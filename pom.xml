@@ -7,8 +7,7 @@
     <groupId>me.j360.rpc</groupId>
     <artifactId>j360-rpc</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
-
+    <version>1.0.0-RELEASE</version>
 
     <properties>
         <spring.data.redis.version>1.4.2.RELEASE</spring.data.redis.version>
@@ -361,31 +360,6 @@
                 <version>1.1.2.RELEASE</version>
             </dependency>
 
-            <!--springfox-->
-            <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger2</artifactId>
-                <version>${springfox.version}</version>
-            </dependency>
-
-            <!-- Shiro -->
-            <dependency>
-                <groupId>org.apache.shiro</groupId>
-                <artifactId>shiro-core</artifactId>
-                <version>${shiro.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.shiro</groupId>
-                <artifactId>shiro-web</artifactId>
-                <version>${shiro.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shiro</groupId>
-                <artifactId>shiro-spring</artifactId>
-                <version>${shiro.version}</version>
-            </dependency>
-
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -431,35 +405,6 @@
                 <optional>true</optional>
             </dependency>
             <!-- OPTIONAL end -->
-
-            <dependency>
-                <groupId>com.dangdang</groupId>
-                <artifactId>sharding-jdbc-core</artifactId>
-                <version>1.4.2-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.dangdang</groupId>
-                <artifactId>sharding-jdbc-config-spring</artifactId>
-                <version>1.4.2-SNAPSHOT</version>
-            </dependency>
-
-            <!---->
-            <dependency>
-                <groupId>io.zipkin.brave</groupId>
-                <artifactId>brave-core</artifactId>
-                <version>${brave.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.zipkin.brave</groupId>
-                <artifactId>brave-http</artifactId>
-                <version>${brave.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.zipkin.brave</groupId>
-                <artifactId>brave-web-servlet-filter</artifactId>
-                <version>${brave.version}</version>
-            </dependency>
-
 
             <dependency>
                 <groupId>junit</groupId>
@@ -646,29 +591,8 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <warSourceExcludes>src/main/resource/generator</warSourceExcludes>
-                    <!-- 激活spring profile -->
-                    <webResources>
-                        <resource>
-                            <filtering>true</filtering>
-                            <directory>src/main/webapp</directory>
-                            <includes>
-                                <include>**/web.xml</include>
-                            </includes>
-                        </resource>
-                    </webResources>
-                    <warSourceDirectory>src/main/webapp</warSourceDirectory>
-                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-                </configuration>
-            </plugin>
-
             <!--打包发布版本插件
-             mvn release:clean release:prepare -Darguments="-DskipTests" -Dtag=0.1.0 -DreleaseVersion=0.1.0-RELEASE -DdevelopmentVersion=0.1.1-SNAPSHOT -Dresume=false -Ptest
+             mvn release:clean release:prepare -Darguments="-DskipTests" -Dtag=1.0.0 -DreleaseVersion=1.0.0-RELEASE -DdevelopmentVersion=1.1.0-SNAPSHOT -Dresume=false
             -->
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
@@ -679,9 +603,9 @@
                     <releaseProfiles>release</releaseProfiles>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
 
-                    <tagNameFormat>0.1.2</tagNameFormat>
-                    <releaseVersion>0.1.2-RELEASE</releaseVersion>
-                    <developmentVersion>0.1.3-SNAPSHOT</developmentVersion>
+                    <tagNameFormat>1.0.0</tagNameFormat>
+                    <releaseVersion>1.0.0-RELEASE</releaseVersion>
+                    <developmentVersion>1.1.0-SNAPSHOT</developmentVersion>
                 </configuration>
             </plugin>
 

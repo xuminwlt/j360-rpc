@@ -89,10 +89,11 @@ public class RPCProxy<T> implements MethodInterceptor {
 
             return response.getResult();
         } else {
-            //DefaultFuture future = new DefaultFuture(rpcClientHandler,fullRequest,rpcCallback);
-            //DefaultFuture.sent(rpcClientHandler.getChannel(),fullRequest);
+            DefaultFuture future = new DefaultFuture(fullRequest,rpcCallback,3000L);
+            future.sent(channel);
 
-            return response;
+            response.setResult(null);
+            return response.getResult();
         }
     }
 }

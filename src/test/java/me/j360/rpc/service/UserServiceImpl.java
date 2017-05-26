@@ -15,7 +15,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDO getUser(Long uid) {
-
         UserDO userDO = new UserDO();
         userDO.setUid(uid);
         userDO.setName(String.valueOf(uid));

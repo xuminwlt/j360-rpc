@@ -42,7 +42,7 @@ public class RPCServerFactoryBean implements FactoryBean<RPCServer>, Initializin
         Map<String, Object> serviceBeanMap = ctx.getBeansWithAnnotation(RpcService.class);
         if (MapUtils.isNotEmpty(serviceBeanMap)) {
             for (Object serviceBean : serviceBeanMap.values()) {
-                String interfaceName = serviceBean.getClass().getInterfaces()[0].getCanonicalName();
+                String interfaceName = serviceBean.getClass().getAnnotation(RpcService.class).value().getCanonicalName();
                 handlerMap.put(interfaceName, serviceBean);
             }
         }

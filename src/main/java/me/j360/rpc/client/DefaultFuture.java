@@ -65,7 +65,7 @@ public class DefaultFuture<T> implements ResponseFuture {
 
         latch.countDown();
         if (callback != null) {
-            callback.success((T) fullResponse);
+            callback.success((T) fullResponse.getResult());
         }
     }
 
