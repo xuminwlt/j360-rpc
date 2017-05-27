@@ -3,7 +3,6 @@ package me.j360.rpc.spring;
 import me.j360.rpc.client.RPCClient;
 import me.j360.rpc.client.RPCClientOption;
 import me.j360.rpc.register.ServiceDiscovery;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,8 +16,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RPCClientConfiguration {
 
-    private @Value("#{timeout}") Long timeout;
-    private @Value("#{zkAddress}") String zkAddress;
+    //private @Value("#{timeout}") Long timeout;
+    //private @Value("#{zkAddress}") String zkAddress;
+    private  String zkAddress = "127.0.0.1:2181";
 
     @Bean
     public RPCClientOption rpcClientOption() {

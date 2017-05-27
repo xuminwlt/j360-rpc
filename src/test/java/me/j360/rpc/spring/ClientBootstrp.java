@@ -16,6 +16,7 @@ public class ClientBootstrp {
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(RPCClientConfiguration.class);
         ctx.start();
 
+        //需要在启动时将这个接口代理实现化
         UserService userService = (UserService) ctx.getBean("userService");
         //Sync
         UserDO userDO = userService.getUser(1L);
